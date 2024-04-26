@@ -1,30 +1,49 @@
-def word_count(txt: str) -> int:
-    word_list = txt.split()
-    return len(word_list)
+def main() -> None:
+    book_path = "books/frankenstein.txt"
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
 
-def get_text_from_file(path: str) -> str:
+    print(f"--- Begin report of {book_path} ---")
+    print(f"{num_words} words found in the document")
+    print()
+
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"The '{item['char']}' character was found {item['num']} times")
+
+    print("--- End report ---")
+
+def get_num_words(text: str) -> int:
+    words = text.split()
+    return len(words)
+
+def sort_on(d):
+    return d["num"]
+
+def chars_dict_to_sorted_list(num_chars_dict: dict[str, int]) -> list[dict[str, int]]:
+    sorted_list = []
+    for ch in num_chars_dict:
+        sorted_list.append({"char": ch, "num": num_chars_dict[ch]})
+    sorted_list.sort(reverse=True, key=sort_on)
+    return sorted_list
+
+def get_chars_dict(text: str) -> dict[str, int]:
+    chars = {}
+    lowered = text.lower()
+    for c in lowered:
+        if c.isalpha():
+            if c in chars:
+                chars[c] += 1
+            else:
+                chars[c] = 1
+    return chars
+
+def get_book_text(path):
     with open(path) as f:
         return f.read()
-
-def letter_counts(txt: str) -> dict[str, int]:
-    txt_list = list(txt.lower())
-    counts = {}
-    for letter in txt_list:
-        try:
-            letter = int(letter)
-        except:
-            if letter not in counts.keys:
-                counts[letter] = 1
-            else:
-                counts[letter] += 1
-    return counts
-
-def main() -> None:
-    text = get_text_from_file('./books/frankenstein.txt')
-    print(text)
-    num_words = word_count(text)
-    print(f'{num_words} words found in the document')
-
 
 if __name__ == '__main__':
     main()
